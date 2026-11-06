@@ -1,22 +1,25 @@
-# Uncomment the imports below before you add the function code
-# import requests
+"""HTTP clients for the Node/Mongo API and Flask sentiment service."""
+from urllib.parse import quote
 import os
-from dotenv import load_dotenv
+import requests
 
-load_dotenv()
+BACKEND_URL = os.environ.get('BACKEND_URL', 'http://127.0.0.1:3030').rstrip('/')
+SENTIMENT_URL = os.environ.get('SENTIMENT_URL', 'http://127.0.0.1:5050').rstrip('/')
 
-backend_url = os.getenv(
-    'backend_url', default="http://localhost:3030")
-sentiment_analyzer_url = os.getenv(
-    'sentiment_analyzer_url',
-    default="http://localhost:5050/")
 
-# def get_request(endpoint, **kwargs):
-# Add code for get requests to back end
+def get_request(endpoint):
+    response = requests.get(f'{BACKEND_URL}/{endpoint.lstrip("/")}', timeout=15)
+    response.raise_for_status()
+    return response.json()
 
-# def analyze_review_sentiments(text):
-# request_url = sentiment_analyzer_url+"analyze/"+text
-# Add code for retrieving sentiments
 
-# def post_review(data_dict):
-# Add code for posting review
+def analyze_review_sentiments(text):
+    response = requests.get(f'{SENTIMENT_URL}/analyze/{quote(text, safe="")}', timeout=15)
+    response.raise_for_status()
+    return response.json()
+
+
+def post_review(data):
+    response = requests.post(f'{BACKEND_URL}/insert_review', json=data, timeout=15)
+    response.raise_for_status()
+    return response.json()

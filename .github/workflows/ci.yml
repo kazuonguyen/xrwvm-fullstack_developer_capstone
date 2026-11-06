@@ -1,0 +1,46 @@
+name: Capstone CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7.0
+        ports: [27017:27017]
+        options: --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'" --health-interval 10s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Python dependencies
+        run: pip install -r server/requirements.txt -r server/djangoapp/microservices/requirements.txt
+      - name: Build React frontend
+        working-directory: server/frontend
+        run: npm ci && npm run build
+      - name: Check Django and run authentication/API tests
+        working-directory: server
+        run: python manage.py check && python manage.py makemigrations --check --dry-run && python manage.py test djangoapp -v 2
+      - name: Test real NLTK sentiment model
+        working-directory: server/djangoapp/microservices
+        run: python -m unittest test_sentiment -v
+      - name: Install and check Express service
+        working-directory: server/database
+        run: npm ci && node --check app.js
+      - name: Test Express with real MongoDB
+        working-directory: server/database
+        run: |
+          node app.js > /tmp/cars-api.log 2>&1 &
+          for attempt in $(seq 1 60); do curl -fsS http://127.0.0.1:3030/ && break; sleep 2; done
+          curl -fsS http://127.0.0.1:3030/fetchDealers | python -c "import json,sys; assert len(json.load(sys.stdin)) == 50"
+          curl -fsS http://127.0.0.1:3030/fetchDealers/Kansas | python -c "import json,sys; rows=json.load(sys.stdin); assert rows and all(r['state']=='Kansas' for r in rows)"
+      - name: Build production Django image
+        run: docker build -t cars-capstone:ci server

@@ -1,0 +1,8 @@
+**/node_modules
+**/__pycache__
+**/*.pyc
+frontend/build
+db.sqlite3
+.env
+.venv
+static

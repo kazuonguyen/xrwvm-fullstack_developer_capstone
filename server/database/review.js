@@ -41,4 +41,6 @@ const reviews = new Schema({
   },
 });
 
+reviews.index({id: 1}, {unique: true});
+
 module.exports = mongoose.model('reviews', reviews);

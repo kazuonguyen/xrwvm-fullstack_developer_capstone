@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+server/frontend/build/
+server/static/
+evidence/
+*.cookies
+*.secret
