@@ -41,7 +41,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert json.loads(result)['status'] == 200
     save('logoutuser', cmd, result)
 for name, endpoint in [
-    ('getdealerreviews', '/djangoapp/reviews/dealer/8'),
+    ('getdealerreviews', '/djangoapp/reviews/dealer/15'),
     ('getalldealers', '/djangoapp/get_dealers'),
     ('getdealerbyid', '/djangoapp/dealer/8'),
     ('getdealersbyState', '/djangoapp/get_dealers/Kansas'),
