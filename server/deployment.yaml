@@ -4,42 +4,6 @@
   "items": [
     {
       "apiVersion": "v1",
-      "kind": "PersistentVolumeClaim",
-      "metadata": {
-        "name": "cars-db-data"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "storageClassName": "skills-network-learner",
-        "resources": {
-          "requests": {
-            "storage": "1Gi"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "v1",
-      "kind": "PersistentVolumeClaim",
-      "metadata": {
-        "name": "cars-sqlite-data"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "storageClassName": "skills-network-learner",
-        "resources": {
-          "requests": {
-            "storage": "1Gi"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "v1",
       "kind": "Service",
       "metadata": {
         "name": "cars-db"
@@ -122,9 +86,7 @@
             "volumes": [
               {
                 "name": "data",
-                "persistentVolumeClaim": {
-                  "claimName": "cars-db-data"
-                }
+                "emptyDir": {}
               }
             ]
           }
@@ -355,7 +317,7 @@
                   },
                   {
                     "name": "SENTIMENT_URL",
-                    "value": "http://cars-sentiment:5000"
+                    "value": "https://cars-sentiment.2gtgnvkvqbxe.us-south.codeengine.appdomain.cloud"
                   },
                   {
                     "name": "DJANGO_ALLOWED_HOSTS",
@@ -412,9 +374,7 @@
             "volumes": [
               {
                 "name": "data",
-                "persistentVolumeClaim": {
-                  "claimName": "cars-sqlite-data"
-                }
+                "emptyDir": {}
               }
             ]
           }

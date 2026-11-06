@@ -47,3 +47,16 @@ and photo-1517841905240-472988babdf9, used under https://unsplash.com/license.
 - Starter: https://github.com/ibm-developer-skills-network/xrwvm-fullstack_developer_capstone
 - Django tests: https://docs.djangoproject.com/en/5.2/topics/testing/tools/
 - IBM container lab: https://cf-courses-data.static.labs.skills.network/tjGGlDfSdjazlzEVabUlgA/ContainerizeAndDeploy-Mark-v1.md
+
+## Skills Network deployment
+
+`tools/build_lab.sh` builds and pushes the three application images.
+`tools/deploy_lab.sh` creates the runtime secret from `/tmp/cars.env` and applies
+`server/deployment.yaml`. The manifest uses the lab namespace's registry images
+and the sentiment application's Code Engine URL; update these for another account.
+Forward the deployed service with `kubectl port-forward service/dealership 8001:8000`.
+
+The training cluster forbids persistent volume claims. Its MongoDB and SQLite
+volumes therefore use `emptyDir`: data survives container restarts within a Pod,
+but is reset when that Pod is replaced. Use the Compose volumes or provision
+persistent storage in a production cluster. Lab proxy URLs expire with the lab session.
